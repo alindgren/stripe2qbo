@@ -15,33 +15,14 @@ namespace Stripe2QBO
         {
             log.Info("StripeWebhookHandler - C# HTTP trigger function processed a request.");
 
-            // parse query parameter
-            //string name = req.GetQueryNameValuePairs()
-            //    .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
-            //    .Value;
-
             // Get request body
-            string data = await req.Content.ReadAsStringAsync();
-            string stripeSignatureHeader = req.Headers.GetValues("Stripe-Signature").FirstOrDefault();
-            string secret = "whsec_peq5q5vfcN401gtRI7BYgUwZKFedCTqG";
+            var data = await req.Content.ReadAsStringAsync();
+            var stripeSignatureHeader = req.Headers.GetValues("Stripe-Signature").FirstOrDefault();
+            var secret = System.Configuration.ConfigurationManager.AppSettings["StripeWebhookSecret"];
             var stripeEvent = Stripe.StripeEventUtility.ConstructEvent(data, stripeSignatureHeader, secret);
             log.Info("type: " + stripeEvent.Type);
             log.Info("amount:  " + stripeEvent.Data.Object["amount"]);
 
-            //if (stripeEvent.Data.Object["object"] == "charge")
-            //{
-
-            //}
-            //object": "charge
-
-           // log.Info("type: " + data.type);
-
-            //// Set name to query string or body data
-            //name = name ?? data?.name;
-
-            //return name == null
-            //    ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
-            //    : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
             return req.CreateResponse(HttpStatusCode.OK, "OK");
         }
     }
